@@ -12,9 +12,9 @@ export default function Home() {
   const selectedUniversity = getUniversityById(selectedId);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-stone-50">
       {/* Left Sidebar - University List */}
-      <div className="w-full md:w-[380px] lg:w-[420px] flex-shrink-0">
+      <div className="w-full md:w-[280px] lg:w-[300px] flex-shrink-0 shadow-[0_0_40px_rgba(0,0,0,0.04)]">
         <UniversityList
           universities={universities}
           selectedId={selectedId}
@@ -27,7 +27,7 @@ export default function Home() {
         {selectedUniversity && <UniversityDetail university={selectedUniversity} />}
       </div>
 
-      {/* Mobile: Show detail in overlay when selected (optional future enhancement) */}
+      {/* Mobile: Show detail in overlay when selected */}
       <div className="md:hidden flex-1 flex items-center justify-center p-8">
         {selectedUniversity && <UniversityDetail university={selectedUniversity} />}
       </div>
