@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Top Global Universities 2024",
+  title: "Top Global Universities",
   description: "Explore the top 30 universities worldwide with comprehensive rankings, locations, and program highlights. Optimized for iPad viewing.",
 };
 
