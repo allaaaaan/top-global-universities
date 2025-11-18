@@ -24,8 +24,8 @@ export default function UniversityDetail({ university }: UniversityDetailProps) 
   const gradientClass = getRankGradient(university.rank);
 
   return (
-    <div ref={scrollRef} className="h-screen overflow-y-auto bg-white">
-      <div className="max-w-4xl mx-auto px-8 py-12 lg:px-16 lg:py-16">
+    <div ref={scrollRef} className="h-screen overflow-y-auto bg-white w-full">
+      <div className="max-w-5xl mx-auto px-8 py-12 lg:px-16 lg:py-16">
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-start gap-5 mb-6">
