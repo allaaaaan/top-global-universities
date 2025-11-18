@@ -1,7 +1,20 @@
 {
   "name": "top-global-universities",
   "version": "1.0.0",
-  "description": "A modern static web app showcasing the top 30 global universities with interactive master-detail layout, optimized for iPad viewing",
+  "description": "Interactive web app showcasing the top 30 universities worldwide with rankings, locations, and program information",
+  "author": "Allan Liang",
+  "license": "MIT",
+  "keywords": [
+    "universities",
+    "education",
+    "rankings",
+    "nextjs",
+    "react"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/top-global-universities"
+  },
   "private": false,
   "scripts": {
     "dev": "next dev",
