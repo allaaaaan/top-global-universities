@@ -171,7 +171,7 @@
     "id": "chicago",
     "rank": 11,
     "name": "University of Chicago",
-    "shortName": "UChicago",
+    "shortName": "Chicago",
     "location": {
       "city": "Chicago, IL",
       "country": "United States"
@@ -338,7 +338,7 @@
     "id": "tokyo",
     "rank": 21,
     "name": "University of Tokyo",
-    "shortName": "U-Tokyo",
+    "shortName": "Tokyo",
     "location": {
       "city": "Tokyo",
       "country": "Japan"
@@ -439,7 +439,7 @@
     "id": "toronto",
     "rank": 27,
     "name": "University of Toronto",
-    "shortName": "U of T",
+    "shortName": "Toronto",
     "location": {
       "city": "Toronto",
       "country": "Canada"
@@ -456,7 +456,7 @@
     "id": "peking",
     "rank": 28,
     "name": "Peking University",
-    "shortName": "PKU",
+    "shortName": "Peking",
     "location": {
       "city": "Beijing",
       "country": "China"

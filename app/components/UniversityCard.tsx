@@ -36,7 +36,7 @@ export default function UniversityCard({ university, isSelected, onClick }: Univ
           </span>
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className={`font-semibold text-sm leading-tight mb-0.5 transition-colors ${
+          <h3 className={`font-semibold text-sm leading-tight mb-0.5 transition-colors truncate ${
             isSelected ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'
           }`}>
             {university.shortName}
@@ -44,7 +44,7 @@ export default function UniversityCard({ university, isSelected, onClick }: Univ
           <p className={`text-xs truncate transition-colors ${
             isSelected ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500'
           }`}>
-            {university.location.city}
+            {university.location.country}, {university.location.city}
           </p>
         </div>
       </div>

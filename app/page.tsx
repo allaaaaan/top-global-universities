@@ -15,7 +15,7 @@ export default function Home() {
     <div className="flex h-screen overflow-hidden bg-stone-50">
       <div className="flex w-full max-w-[1600px] mx-auto">
         {/* Left Sidebar - University List */}
-        <div className="w-full md:w-[280px] lg:w-[300px] flex-shrink-0 shadow-[0_0_40px_rgba(0,0,0,0.04)]">
+        <div className="w-full md:w-[280px] lg:w-[300px] flex-shrink-0 shadow-[0_0_40px_rgba(0,0,0,0.04)] overflow-x-hidden">
           <UniversityList
             universities={universities}
             selectedId={selectedId}
