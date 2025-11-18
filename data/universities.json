@@ -1,0 +1,505 @@
+[
+  {
+    "id": "mit",
+    "rank": 1,
+    "name": "Massachusetts Institute of Technology (MIT)",
+    "shortName": "MIT",
+    "location": {
+      "city": "Cambridge, MA",
+      "country": "United States"
+    },
+    "description": "Ranked #1 globally for 13 consecutive years, MIT is known for extreme academic rigor and breakthrough innovation. Located next to Harvard, MIT drives research that shapes modern technology and industry.",
+    "majors": [
+      "Engineering & Technology",
+      "Computer Science",
+      "Natural Sciences",
+      "Architecture"
+    ]
+  },
+  {
+    "id": "harvard",
+    "rank": 2,
+    "name": "Harvard University",
+    "shortName": "Harvard",
+    "location": {
+      "city": "Cambridge, MA",
+      "country": "United States"
+    },
+    "description": "The oldest US university, Harvard holds the world's largest academic endowment and a global network of influential alumni. It ranks extremely high across nearly every major ranking system.",
+    "majors": [
+      "Life Sciences & Medicine",
+      "Natural Sciences",
+      "Social Sciences & Management",
+      "Law",
+      "Business"
+    ]
+  },
+  {
+    "id": "cambridge",
+    "rank": 3,
+    "name": "University of Cambridge",
+    "shortName": "Cambridge",
+    "location": {
+      "city": "Cambridge",
+      "country": "United Kingdom"
+    },
+    "description": "Founded in 1209, Cambridge is one of the world's oldest institutions and consistently ranks in the global top tier with deep research strength.",
+    "majors": [
+      "Arts & Humanities",
+      "Physical Sciences",
+      "High-impact Research"
+    ]
+  },
+  {
+    "id": "oxford",
+    "rank": 4,
+    "name": "University of Oxford",
+    "shortName": "Oxford",
+    "location": {
+      "city": "Oxford",
+      "country": "United Kingdom"
+    },
+    "description": "The oldest English-speaking university, Oxford operates through 38 colleges and is known for personalized \"tutorial\" teaching.",
+    "majors": [
+      "Humanities",
+      "Social Sciences & Management",
+      "Life Sciences & Medicine"
+    ]
+  },
+  {
+    "id": "stanford",
+    "rank": 5,
+    "name": "Stanford University",
+    "shortName": "Stanford",
+    "location": {
+      "city": "Stanford, CA",
+      "country": "United States"
+    },
+    "description": "Located in Silicon Valley, Stanford is tightly connected with the tech industry and acts as a major engine for global entrepreneurship.",
+    "majors": [
+      "Engineering & Technology",
+      "Computer Science",
+      "Entrepreneurship",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": "imperial",
+    "rank": 6,
+    "name": "Imperial College London",
+    "shortName": "Imperial",
+    "location": {
+      "city": "London",
+      "country": "United Kingdom"
+    },
+    "description": "A STEM-exclusive university known for rapidly converting research into real-world applications.",
+    "majors": [
+      "Engineering",
+      "Medicine",
+      "Physical Sciences"
+    ]
+  },
+  {
+    "id": "berkeley",
+    "rank": 7,
+    "name": "University of California, Berkeley",
+    "shortName": "UC Berkeley",
+    "location": {
+      "city": "Berkeley, CA",
+      "country": "United States"
+    },
+    "description": "A top global public university, known for excellence across sciences, economics, engineering, and activism-driven history.",
+    "majors": [
+      "Physics, Chemistry",
+      "Economics",
+      "Engineering",
+      "Public Research"
+    ]
+  },
+  {
+    "id": "princeton",
+    "rank": 8,
+    "name": "Princeton University",
+    "shortName": "Princeton",
+    "location": {
+      "city": "Princeton, NJ",
+      "country": "United States"
+    },
+    "description": "A member of the historic \"Big Three,\" Princeton emphasizes undergraduate education and high research output per capita.",
+    "majors": [
+      "Mathematics",
+      "Theoretical Physics",
+      "Humanities"
+    ]
+  },
+  {
+    "id": "caltech",
+    "rank": 9,
+    "name": "California Institute of Technology (Caltech)",
+    "shortName": "Caltech",
+    "location": {
+      "city": "Pasadena, CA",
+      "country": "United States"
+    },
+    "description": "A small STEM-focused university producing extremely high research output relative to size.",
+    "majors": [
+      "Astrophysics",
+      "Physics",
+      "Planetary Science",
+      "Engineering"
+    ]
+  },
+  {
+    "id": "columbia",
+    "rank": 10,
+    "name": "Columbia University",
+    "shortName": "Columbia",
+    "location": {
+      "city": "New York, NY",
+      "country": "United States"
+    },
+    "description": "A major Ivy League institution with global impact in journalism, law, medicine, and public health.",
+    "majors": [
+      "Medicine",
+      "Public Health",
+      "Journalism",
+      "Law",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": "chicago",
+    "rank": 11,
+    "name": "University of Chicago",
+    "shortName": "UChicago",
+    "location": {
+      "city": "Chicago, IL",
+      "country": "United States"
+    },
+    "description": "Known for academic intensity, especially in economics, law, and theoretical sciences.",
+    "majors": [
+      "Economics",
+      "Law",
+      "Sociology",
+      "Theoretical Physics"
+    ]
+  },
+  {
+    "id": "yale",
+    "rank": 12,
+    "name": "Yale University",
+    "shortName": "Yale",
+    "location": {
+      "city": "New Haven, CT",
+      "country": "United States"
+    },
+    "description": "Renowned for arts, law, humanities, and its residential college system.",
+    "majors": [
+      "Law",
+      "Humanities",
+      "Arts",
+      "Political Science"
+    ]
+  },
+  {
+    "id": "cornell",
+    "rank": 13,
+    "name": "Cornell University",
+    "shortName": "Cornell",
+    "location": {
+      "city": "Ithaca, NY",
+      "country": "United States"
+    },
+    "description": "Offers one of the broadest subject ranges in the Ivy League, including unique land-grant programs.",
+    "majors": [
+      "Agriculture",
+      "Engineering",
+      "Hospitality Management",
+      "Veterinary Medicine"
+    ]
+  },
+  {
+    "id": "upenn",
+    "rank": 14,
+    "name": "University of Pennsylvania (UPenn)",
+    "shortName": "UPenn",
+    "location": {
+      "city": "Philadelphia, PA",
+      "country": "United States"
+    },
+    "description": "Founded by Benjamin Franklin, known for professional schools and practical education.",
+    "majors": [
+      "Business (Wharton)",
+      "Medicine",
+      "Nursing",
+      "Law"
+    ]
+  },
+  {
+    "id": "ucl",
+    "rank": 15,
+    "name": "University College London (UCL)",
+    "shortName": "UCL",
+    "location": {
+      "city": "London",
+      "country": "United Kingdom"
+    },
+    "description": "A huge research powerhouse known for inclusivity and strong global research impact.",
+    "majors": [
+      "Biomedical Sciences",
+      "Architecture",
+      "Neuroscience"
+    ]
+  },
+  {
+    "id": "hopkins",
+    "rank": 16,
+    "name": "Johns Hopkins University",
+    "shortName": "Johns Hopkins",
+    "location": {
+      "city": "Baltimore, MD",
+      "country": "United States"
+    },
+    "description": "Globally dominant in medical and public health research; the first US research university.",
+    "majors": [
+      "Medicine",
+      "Public Health",
+      "Biomedical Engineering",
+      "International Studies"
+    ]
+  },
+  {
+    "id": "ucla",
+    "rank": 17,
+    "name": "University of California, Los Angeles (UCLA)",
+    "shortName": "UCLA",
+    "location": {
+      "city": "Los Angeles, CA",
+      "country": "United States"
+    },
+    "description": "A major UC campus with excellence in arts, sciences, and engineering.",
+    "majors": [
+      "Life Sciences",
+      "Arts & Humanities",
+      "Engineering"
+    ]
+  },
+  {
+    "id": "eth",
+    "rank": 18,
+    "name": "ETH Zurich",
+    "shortName": "ETH Zurich",
+    "location": {
+      "city": "Zurich",
+      "country": "Switzerland"
+    },
+    "description": "Europe's top technical university, alma mater of Einstein.",
+    "majors": [
+      "Engineering",
+      "Natural Sciences",
+      "Architecture",
+      "Mathematics"
+    ]
+  },
+  {
+    "id": "tsinghua",
+    "rank": 19,
+    "name": "Tsinghua University",
+    "shortName": "Tsinghua",
+    "location": {
+      "city": "Beijing",
+      "country": "China"
+    },
+    "description": "Asia's #1 in ARWU, widely known as the \"MIT of China.\"",
+    "majors": [
+      "Engineering",
+      "Computer Science",
+      "Physical Sciences"
+    ]
+  },
+  {
+    "id": "nus",
+    "rank": 20,
+    "name": "National University of Singapore (NUS)",
+    "shortName": "NUS",
+    "location": {
+      "city": "Singapore",
+      "country": "Singapore"
+    },
+    "description": "A globally competitive institution with strong industry integration.",
+    "majors": [
+      "Engineering",
+      "Computer Science",
+      "Asian Studies",
+      "Employability-focused disciplines"
+    ]
+  },
+  {
+    "id": "tokyo",
+    "rank": 21,
+    "name": "University of Tokyo",
+    "shortName": "U-Tokyo",
+    "location": {
+      "city": "Tokyo",
+      "country": "Japan"
+    },
+    "description": "Japan's most prestigious university.",
+    "majors": [
+      "Physics",
+      "Chemistry",
+      "Engineering",
+      "Fundamental Sciences"
+    ]
+  },
+  {
+    "id": "edinburgh",
+    "rank": 22,
+    "name": "University of Edinburgh",
+    "shortName": "Edinburgh",
+    "location": {
+      "city": "Edinburgh",
+      "country": "United Kingdom"
+    },
+    "description": "A historic research institution with strong computational and medical strength.",
+    "majors": [
+      "Informatics",
+      "Medicine",
+      "Veterinary Medicine",
+      "Humanities"
+    ]
+  },
+  {
+    "id": "paris-saclay",
+    "rank": 23,
+    "name": "Paris-Saclay University",
+    "shortName": "Paris-Saclay",
+    "location": {
+      "city": "Gif-sur-Yvette",
+      "country": "France"
+    },
+    "description": "A newly consolidated group of elite French institutions that rapidly rose in global rankings.",
+    "majors": [
+      "Mathematics",
+      "Physics",
+      "Engineering"
+    ]
+  },
+  {
+    "id": "michigan",
+    "rank": 24,
+    "name": "University of Michigan – Ann Arbor",
+    "shortName": "Michigan",
+    "location": {
+      "city": "Ann Arbor, MI",
+      "country": "United States"
+    },
+    "description": "A top public university with broad research power.",
+    "majors": [
+      "Public Policy",
+      "Medicine",
+      "Engineering",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": "mcgill",
+    "rank": 25,
+    "name": "McGill University",
+    "shortName": "McGill",
+    "location": {
+      "city": "Montreal",
+      "country": "Canada"
+    },
+    "description": "One of Canada's most internationally known universities.",
+    "majors": [
+      "Medicine",
+      "Law",
+      "Biological Sciences",
+      "Neuroscience"
+    ]
+  },
+  {
+    "id": "epfl",
+    "rank": 26,
+    "name": "École Polytechnique Fédérale de Lausanne (EPFL)",
+    "shortName": "EPFL",
+    "location": {
+      "city": "Lausanne",
+      "country": "Switzerland"
+    },
+    "description": "A major technical university focused on innovation and engineering.",
+    "majors": [
+      "Engineering",
+      "Materials Science",
+      "Physics",
+      "Technology Innovation"
+    ]
+  },
+  {
+    "id": "toronto",
+    "rank": 27,
+    "name": "University of Toronto",
+    "shortName": "U of T",
+    "location": {
+      "city": "Toronto",
+      "country": "Canada"
+    },
+    "description": "Canada's largest and most influential research university.",
+    "majors": [
+      "Medicine",
+      "Artificial Intelligence",
+      "Computer Science",
+      "Humanities"
+    ]
+  },
+  {
+    "id": "peking",
+    "rank": 28,
+    "name": "Peking University",
+    "shortName": "PKU",
+    "location": {
+      "city": "Beijing",
+      "country": "China"
+    },
+    "description": "Known for excellence in humanities and social sciences; strong historical influence.",
+    "majors": [
+      "Humanities",
+      "Social Sciences",
+      "Law",
+      "Physical Sciences"
+    ]
+  },
+  {
+    "id": "melbourne",
+    "rank": 29,
+    "name": "University of Melbourne",
+    "shortName": "Melbourne",
+    "location": {
+      "city": "Melbourne",
+      "country": "Australia"
+    },
+    "description": "Australia's #1 university with excellent global employability outcomes.",
+    "majors": [
+      "Life Sciences",
+      "Comprehensive Majors Across All Fields"
+    ]
+  },
+  {
+    "id": "kcl",
+    "rank": 30,
+    "name": "King's College London (KCL)",
+    "shortName": "KCL",
+    "location": {
+      "city": "London",
+      "country": "United Kingdom"
+    },
+    "description": "A historic institution with strong influence in medicine and global policy studies.",
+    "majors": [
+      "Medicine",
+      "Dentistry",
+      "Law",
+      "War Studies"
+    ]
+  }
+]
+

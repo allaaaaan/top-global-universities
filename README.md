@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Top Global Universities 2024
+
+A modern, static web application showcasing the top 30 universities worldwide with comprehensive rankings, locations, and program highlights. Built with Next.js and optimized for iPad landscape viewing.
+
+## Features
+
+- **Master-Detail Layout**: Split-view interface with university list (left) and detailed information (right)
+- **No Backend Required**: All data stored in structured JSON files
+- **iPad Optimized**: Designed for 1024x768 landscape viewing with touch-friendly interactions
+- **Smooth Navigation**: Single-page app with instant state-based updates
+- **Modern UI**: Clean design with Tailwind CSS, custom scrollbars, and smooth transitions
+- **TypeScript**: Fully typed for better development experience
+
+## Tech Stack
+
+- **Framework**: Next.js 16.0.3 (App Router)
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS 4
+- **UI**: React 19
+
+## Project Structure
+
+```
+top-global-universities/
+├── app/
+│   ├── components/           # React components
+│   │   ├── BackToTop.tsx     # Floating scroll-to-top button
+│   │   ├── UniversityCard.tsx # Individual university list item
+│   │   ├── UniversityDetail.tsx # University detail panel
+│   │   └── UniversityList.tsx   # Left sidebar with all universities
+│   ├── globals.css           # Global styles and iPad optimizations
+│   ├── layout.tsx            # Root layout with metadata
+│   └── page.tsx              # Main page with master-detail layout
+├── data/
+│   ├── types.ts              # TypeScript interfaces
+│   ├── universities.json     # University data (30 entries)
+│   └── index.ts              # Data exports and helper functions
+└── public/                   # Static assets
+```
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ installed
+- npm, yarn, pnpm, or bun package manager
+
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Create optimized production build
+npm run build
 
-## Learn More
+# Start production server
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Data Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Universities are stored in `/data/universities.json` with the following structure:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```typescript
+interface University {
+  id: string;
+  rank: number;
+  name: string;
+  shortName: string;
+  location: {
+    city: string;
+    country: string;
+  };
+  description: string;
+  majors: string[];
+}
+```
 
-## Deploy on Vercel
+## Usage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Browse Universities**: Scroll through the left sidebar to view all 30 ranked universities
+2. **View Details**: Click any university to see full details in the right panel
+3. **Navigation**: The selected university is highlighted with a blue background
+4. **Scroll**: Use the floating "Back to Top" button when viewing long content
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Optimization for iPad
+
+- Touch-friendly button sizes (minimum 44x44px)
+- Optimized viewport for 1024x768 landscape orientation
+- Custom scrollbar styling
+- Smooth scroll behavior
+- Responsive layout that adapts to different screen sizes
+
+## License
+
+Private project - not licensed for public distribution.
+
+## Development
+
+Built with modern web technologies for optimal performance and user experience. No backend or database required - perfect for static hosting on Vercel, Netlify, or similar platforms.

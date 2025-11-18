@@ -1,7 +1,8 @@
 {
-  "name": "nextjs",
-  "version": "0.1.0",
-  "private": true,
+  "name": "top-global-universities",
+  "version": "1.0.0",
+  "description": "A modern static web app showcasing the top 30 global universities with interactive master-detail layout, optimized for iPad viewing",
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
