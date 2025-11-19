@@ -216,16 +216,28 @@ export default function CircularLayout() {
         )}
       </AnimatePresence>
 
-      {/* Back Button */}
-      <motion.a
-        href="/"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.8 }}
-        className="absolute top-8 left-8 px-4 py-2 bg-white/10 backdrop-blur-md text-white rounded-lg hover:bg-white/20 transition-colors border border-white/20 text-sm font-medium"
-      >
-        ← Back to List View
-      </motion.a>
+      {/* Navigation Buttons */}
+      <div className="absolute top-8 left-8 flex gap-2">
+        <motion.a
+          href="/"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.8 }}
+          className="px-4 py-2 bg-white/10 backdrop-blur-md text-white rounded-lg hover:bg-white/20 transition-colors border border-white/20 text-sm font-medium"
+        >
+          ← Back to List View
+        </motion.a>
+        <motion.a
+          href="/party"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.9 }}
+          className="px-4 py-2 bg-amber-500/20 backdrop-blur-md text-white rounded-lg hover:bg-amber-500/30 transition-colors border border-amber-400/30 text-sm font-medium flex items-center gap-2"
+        >
+          <span>🎉</span>
+          <span>Party View</span>
+        </motion.a>
+      </div>
     </div>
   );
 }

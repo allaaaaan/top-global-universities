@@ -13,14 +13,23 @@ export default function Home() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-stone-50 relative">
-      {/* Circular Layout Link */}
-      <a
-        href="/circular"
-        className="absolute top-4 right-4 z-50 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg text-sm font-medium flex items-center gap-2"
-      >
-        <span>🎯</span>
-        <span>Circular View</span>
-      </a>
+      {/* View Navigation Links */}
+      <div className="absolute top-4 right-4 z-50 flex gap-2">
+        <a
+          href="/circular"
+          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg text-sm font-medium flex items-center gap-2"
+        >
+          <span>🎯</span>
+          <span>Circular View</span>
+        </a>
+        <a
+          href="/party"
+          className="px-4 py-2 bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-lg hover:from-amber-600 hover:to-pink-600 transition-all shadow-lg text-sm font-medium flex items-center gap-2"
+        >
+          <span>🎉</span>
+          <span>Party View</span>
+        </a>
+      </div>
 
       <div className="flex w-full max-w-[1600px] mx-auto">
         {/* Left Sidebar - University List */}
