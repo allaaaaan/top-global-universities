@@ -4,24 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useMotionValue, MotionValue, useTransform } from 'framer-motion';
 import { getAllUniversities, University } from '@/data';
 import Matter from 'matter-js';
-
-// --- Types ---
-
-interface UniversityState {
-  id: string;
-  university: University;
-  isPinned: boolean;
-  emotion: '😊' | '💬' | '🤩';
-  bodyId: number;
-}
-
-interface Conversation {
-  id: string;
-  uni1Id: string;
-  uni2Id: string;
-  message: string;
-  startTime: number;
-}
+import { Conversation } from './types';
 
 // --- Constants ---
 
@@ -36,7 +19,144 @@ const COLORS = [
 
 const AVATAR_SIZE = 80;
 const RADIUS = 40;
-const PROXIMITY_THRESHOLD = 180;
+const CONNECT_THRESHOLD = 180;
+const DISCONNECT_THRESHOLD = 250;
+
+// --- Types ---
+
+interface UniversityState {
+  id: string;
+  university: University;
+  isPinned: boolean;
+  emotion: '😊' | '💬' | '🤩';
+  bodyId: number;
+}
+
+// --- Hook: Conversation Engine ---
+
+const useConversationEngine = (
+  bodiesMapRef: React.MutableRefObject<Map<number, string>>,
+  engineRef: React.MutableRefObject<Matter.Engine | null>
+) => {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const pendingConversationsRef = useRef<Set<string>>(new Set());
+
+  // Helper to generate a message (Async placeholder)
+  const generateMessage = async (u1: University, u2: University, context: string[]): Promise<string> => {
+    // Simulate "thinking" delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const messages = [];
+    if (context.length === 0) {
+      // Openers
+      if (Math.abs(u1.rank - u2.rank) <= 3) messages.push(`Top ${Math.max(u1.rank, u2.rank)} club!`);
+      else messages.push(`Hi #${u2.rank}, I'm #${u1.rank}`);
+      if (u1.location.country === u2.location.country) messages.push(`${u1.location.country} squad!`);
+    } else {
+      // Follow-ups
+      const commonMajor = u1.majors.find(m => u2.majors.includes(m));
+      if (commonMajor) messages.push(`We both rock at ${commonMajor}!`);
+      messages.push("How's the weather?");
+      messages.push("Research going well?");
+      messages.push("Nice campus!");
+    }
+    
+    return messages[Math.floor(Math.random() * messages.length)] || "Hello!";
+  };
+
+  useEffect(() => {
+    const checkProximity = async () => {
+      if (!engineRef.current) return;
+
+      const bodies = Matter.Composite.allBodies(engineRef.current.world).filter(b => !b.isStatic && b.label !== 'Rectangle Body');
+      const activeIds = new Set<string>();
+      const now = Date.now();
+
+      // 1. Detect new or existing pairs
+      for (let i = 0; i < bodies.length; i++) {
+        for (let j = i + 1; j < bodies.length; j++) {
+          const b1 = bodies[i];
+          const b2 = bodies[j];
+          const dx = b1.position.x - b2.position.x;
+          const dy = b1.position.y - b2.position.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          const id1 = bodiesMapRef.current.get(b1.id);
+          const id2 = bodiesMapRef.current.get(b2.id);
+
+          if (!id1 || !id2) continue;
+
+          const convoId = [id1, id2].sort().join('-');
+          const existing = conversations.find(c => c.id === convoId);
+          const isPending = pendingConversationsRef.current.has(convoId);
+
+          // Hysteresis Logic
+          if (dist < CONNECT_THRESHOLD || (existing && dist < DISCONNECT_THRESHOLD)) {
+            activeIds.add(convoId);
+
+            if (!existing && !isPending) {
+              // Start new conversation
+              pendingConversationsRef.current.add(convoId);
+              
+              const u1 = getAllUniversities().find(u => u.id === id1)!;
+              const u2 = getAllUniversities().find(u => u.id === id2)!;
+              
+              // Initial message
+              generateMessage(u1, u2, []).then(text => {
+                setConversations(prev => {
+                  // Check if it's already added by another race (unlikely with ref but safe)
+                  if (prev.some(c => c.id === convoId)) return prev;
+                  return [...prev, {
+                    id: convoId,
+                    participants: [id1, id2],
+                    messages: [{ text, senderId: id1, timestamp: Date.now() }],
+                    status: 'active',
+                    lastActive: Date.now()
+                  }];
+                });
+                pendingConversationsRef.current.delete(convoId);
+              });
+            } else if (existing && !isPending) {
+              // Update existing conversation (Dynamic flow)
+              if (now - existing.lastActive > 3000) { // New message every 3s
+                pendingConversationsRef.current.add(convoId);
+                
+                const u1 = getAllUniversities().find(u => u.id === id1)!;
+                const u2 = getAllUniversities().find(u => u.id === id2)!;
+                const lastSender = existing.messages[existing.messages.length - 1].senderId;
+                const nextSender = lastSender === id1 ? id2 : id1;
+                const senderUni = nextSender === id1 ? u1 : u2;
+                const receiverUni = nextSender === id1 ? u2 : u1;
+
+                generateMessage(senderUni, receiverUni, existing.messages.map(m => m.text)).then(text => {
+                   setConversations(prev => prev.map(c => {
+                    if (c.id === convoId) {
+                      return {
+                        ...c,
+                        messages: [...c.messages, { text, senderId: nextSender, timestamp: Date.now() }],
+                        lastActive: Date.now()
+                      };
+                    }
+                    return c;
+                  }));
+                  pendingConversationsRef.current.delete(convoId);
+                });
+              }
+            }
+          }
+        }
+      }
+
+      // 2. Cleanup ended conversations
+      setConversations(prev => prev.filter(c => activeIds.has(c.id)));
+    };
+
+    const interval = setInterval(checkProximity, 500);
+    return () => clearInterval(interval);
+  }, [conversations]); // Re-run when conversations change to access latest state
+
+  return conversations;
+};
 
 // --- Helper Components ---
 
@@ -54,7 +174,6 @@ interface AvatarProps {
 const UniversityAvatar = ({ 
   university, x, y, emotion, isPinned, color, setHoveredId, isHovered 
 }: AvatarProps) => {
-  // Transform x/y for the div center (Matter.js uses center, HTML uses top-left)
   const xPos = useTransform(x, value => value - AVATAR_SIZE / 2);
   const yPos = useTransform(y, value => value - AVATAR_SIZE / 2);
 
@@ -62,29 +181,18 @@ const UniversityAvatar = ({
     <motion.div
       onHoverStart={() => setHoveredId(university.id)}
       onHoverEnd={() => setHoveredId(null)}
-      style={{ 
-        x: xPos,
-        y: yPos,
-        width: AVATAR_SIZE, 
-        height: AVATAR_SIZE,
-      }}
+      style={{ x: xPos, y: yPos, width: AVATAR_SIZE, height: AVATAR_SIZE }}
       className="absolute cursor-pointer z-10 pointer-events-none will-change-transform"
     >
-      {/* Pin indicator */}
       <AnimatePresence>
         {isPinned && (
           <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0 }}
+            initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
             className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs shadow-lg z-20"
-          >
-            📌
-          </motion.div>
+          >📌</motion.div>
         )}
       </AnimatePresence>
 
-      {/* Idle animation */}
       <motion.div
         animate={{
           y: emotion === '😊' ? [0, -5, 0] : 0,
@@ -96,7 +204,6 @@ const UniversityAvatar = ({
         }}
         className="w-full h-full"
       >
-        {/* Avatar circle */}
         <div
           className="w-full h-full rounded-full shadow-lg border-4 border-white flex items-center justify-center relative overflow-hidden"
           style={{ backgroundColor: color }}
@@ -105,7 +212,6 @@ const UniversityAvatar = ({
           <span className="text-3xl relative z-10">{emotion}</span>
         </div>
 
-        {/* Name label */}
         <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 whitespace-nowrap">
           <div className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded text-xs font-medium text-gray-700 shadow-sm">
             {university.shortName}
@@ -113,22 +219,15 @@ const UniversityAvatar = ({
         </div>
       </motion.div>
 
-      {/* Hover tooltip */}
       <AnimatePresence>
         {isHovered && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             className="absolute top-full mt-8 left-1/2 -translate-x-1/2 px-3 py-2 bg-gray-900 text-white rounded-lg text-xs whitespace-nowrap pointer-events-none z-30 shadow-xl"
           >
             <div className="font-bold">#{university.rank} - {university.shortName}</div>
-            <div className="text-gray-300 text-[10px]">
-              {university.location.city}
-            </div>
-            <div className="text-gray-400 text-[10px] mt-1">
-              {isPinned ? 'Click to unpin' : 'Click to pin'}
-            </div>
+            <div className="text-gray-300 text-[10px]">{university.location.city}</div>
+            <div className="text-gray-400 text-[10px] mt-1">{isPinned ? 'Click to unpin' : 'Click to pin'}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -141,43 +240,33 @@ interface ConversationVisualsProps {
   uni1Y: MotionValue<number>;
   uni2X: MotionValue<number>;
   uni2Y: MotionValue<number>;
-  message: string;
+  messages: { text: string; senderId: string }[];
 }
 
-const ConversationVisuals = ({ uni1X, uni1Y, uni2X, uni2Y, message }: ConversationVisualsProps) => {
-  // Midpoints for bubble
-  const midX = useTransform([uni1X, uni2X], ([x1, x2]) => (x1 + x2) / 2);
-  const midY = useTransform([uni1Y, uni2Y], ([y1, y2]) => (y1 + y2) / 2 - 40);
+const ConversationVisuals = ({ uni1X, uni1Y, uni2X, uni2Y, messages }: ConversationVisualsProps) => {
+  const midX = useTransform([uni1X, uni2X], ([x1, x2]: number[]) => (x1 + x2) / 2);
+  const midY = useTransform([uni1Y, uni2Y], ([y1, y2]: number[]) => (y1 + y2) / 2 - 40);
+  const latestMessage = messages[messages.length - 1];
 
   return (
     <>
-      {/* Line */}
       <svg className="absolute inset-0 pointer-events-none z-5 overflow-visible" style={{ width: '100%', height: '100%' }}>
         <motion.line
-          style={{ x1: uni1X, y1: uni1Y, x2: uni2X, y2: uni2Y }}
-          stroke="#f472b6"
-          strokeWidth="2"
-          strokeDasharray="5,5"
+          x1={uni1X} y1={uni1Y} x2={uni2X} y2={uni2Y}
+          stroke="#f472b6" strokeWidth="2" strokeDasharray="5,5"
         />
       </svg>
 
-      {/* Bubble */}
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.5 }}
         style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          x: midX,
-          y: midY,
-          translateX: '-50%',
-          translateY: '-50%',
+          position: 'absolute', left: 0, top: 0, x: midX, y: midY, translateX: '-50%', translateY: '-50%',
         }}
-        className="px-4 py-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg text-xs font-medium text-gray-700 border border-pink-200 whitespace-nowrap pointer-events-none z-20"
+        className="px-4 py-2 bg-white/95 backdrop-blur-md rounded-full shadow-lg text-xs font-medium text-gray-700 border border-pink-200 whitespace-nowrap pointer-events-none z-20 max-w-[200px] truncate"
       >
-        {message}
+        {latestMessage?.text || "..."}
       </motion.div>
     </>
   );
@@ -186,32 +275,26 @@ const ConversationVisuals = ({ uni1X, uni1Y, uni2X, uni2Y, message }: Conversati
 // --- Main Component ---
 
 export default function PartyLayout() {
-  // State for logical properties (pins, emotions, conversations), NOT positions
   const [universities, setUniversities] = useState<UniversityState[]>([]);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<Matter.Engine | null>(null);
   const renderRef = useRef<Matter.Render | null>(null);
   const bodiesMapRef = useRef<Map<number, string>>(new Map());
-  
-  // Motion Values Map: { [id]: { x: MotionValue, y: MotionValue } }
-  // Initialize once to be stable across renders
   const motionValuesRef = useRef<Map<string, { x: MotionValue<number>; y: MotionValue<number> }>>(new Map());
 
-  // Initialize Motion Values if empty
+  // Initialize Motion Values
   useMemo(() => {
     if (motionValuesRef.current.size === 0) {
-      const allUnis = getAllUniversities();
-      allUnis.forEach(uni => {
-        motionValuesRef.current.set(uni.id, {
-          x: new MotionValue(0),
-          y: new MotionValue(0)
-        });
+      getAllUniversities().forEach(uni => {
+        motionValuesRef.current.set(uni.id, { x: new MotionValue(0), y: new MotionValue(0) });
       });
     }
   }, []);
+
+  // Use the Conversation Engine Hook
+  const conversations = useConversationEngine(bodiesMapRef, engineRef);
 
   // Physics & Loop
   useEffect(() => {
@@ -220,33 +303,23 @@ export default function PartyLayout() {
     const width = window.innerWidth;
     const height = window.innerHeight;
 
-    // 1. Setup Matter.js
-    const engine = Matter.Engine.create({
-      gravity: { x: 0, y: 0, scale: 0 }, // Zero gravity for floating effect
-    });
+    const engine = Matter.Engine.create({ gravity: { x: 0, y: 0, scale: 0 } });
     engineRef.current = engine;
 
     const render = Matter.Render.create({
       element: containerRef.current,
       engine: engine,
-      options: {
-        width,
-        height,
-        wireframes: false,
-        background: 'transparent',
-      },
+      options: { width, height, wireframes: false, background: 'transparent' },
     });
     renderRef.current = render;
 
-    // Interaction Canvas Styles
     render.canvas.style.position = 'absolute';
     render.canvas.style.top = '0';
     render.canvas.style.left = '0';
     render.canvas.style.pointerEvents = 'auto';
-    render.canvas.style.opacity = '0'; // Invisible but interactive
+    render.canvas.style.opacity = '0';
     render.canvas.style.zIndex = '15';
 
-    // 2. Create Boundaries
     const wallThickness = 500;
     const walls = [
       Matter.Bodies.rectangle(width / 2, -wallThickness / 2, width * 2, wallThickness, { isStatic: true }),
@@ -256,7 +329,6 @@ export default function PartyLayout() {
     ];
     Matter.Composite.add(engine.world, walls);
 
-    // 3. Create Bodies
     const allUnis = getAllUniversities();
     const margin = 100;
     const bodies: Matter.Body[] = [];
@@ -267,51 +339,32 @@ export default function PartyLayout() {
       const y = margin + Math.random() * (height - 2 * margin);
 
       const body = Matter.Bodies.circle(x, y, RADIUS, {
-        restitution: 0.5,
-        friction: 0.1,
-        frictionAir: 0.02,
-        density: 0.001,
+        restitution: 0.5, friction: 0.1, frictionAir: 0.02, density: 0.001,
       });
 
-      Matter.Body.setVelocity(body, {
-        x: (Math.random() - 0.5) * 2,
-        y: (Math.random() - 0.5) * 2,
-      });
+      Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 });
 
       bodies.push(body);
       bodiesMapRef.current.set(body.id, uni.id);
 
-      // Sync initial position
       const mv = motionValuesRef.current.get(uni.id);
-      if (mv) {
-        mv.x.set(x);
-        mv.y.set(y);
-      }
+      if (mv) { mv.x.set(x); mv.y.set(y); }
 
       initialStates.push({
-        id: uni.id,
-        university: uni,
-        isPinned: false,
-        emotion: '😊',
-        bodyId: body.id,
+        id: uni.id, university: uni, isPinned: false, emotion: '😊', bodyId: body.id,
       });
     });
 
     Matter.Composite.add(engine.world, bodies);
     setUniversities(initialStates);
 
-    // 4. Mouse Control
     const mouse = Matter.Mouse.create(render.canvas);
     const mouseConstraint = Matter.MouseConstraint.create(engine, {
       mouse: mouse,
-      constraint: {
-        stiffness: 0.2,
-        render: { visible: false },
-      },
+      constraint: { stiffness: 0.2, render: { visible: false } },
     });
     Matter.Composite.add(engine.world, mouseConstraint);
 
-    // 5. Pinning Logic
     Matter.Events.on(mouseConstraint, 'mousedown', (event) => {
       const mousePos = event.mouse.position;
       const clickedBodies = Matter.Query.point(bodies, mousePos);
@@ -324,22 +377,17 @@ export default function PartyLayout() {
           Matter.Body.setStatic(body, isPinned);
           if (isPinned) Matter.Body.setVelocity(body, { x: 0, y: 0 });
           
-          setUniversities(prev => prev.map(u => 
-            u.id === uniId ? { ...u, isPinned } : u
-          ));
+          setUniversities(prev => prev.map(u => u.id === uniId ? { ...u, isPinned } : u));
         }
       }
     });
 
-    // 6. Physics Loop using requestAnimationFrame
     let animationFrameId: number;
     const runner = Matter.Runner.create();
 
     const loop = () => {
-      // Step physics
       Matter.Runner.tick(runner, engine, 1000 / 60);
 
-      // Sync bodies to MotionValues
       bodies.forEach(body => {
         const uniId = bodiesMapRef.current.get(body.id);
         if (uniId) {
@@ -348,7 +396,6 @@ export default function PartyLayout() {
             mv.x.set(body.position.x);
             mv.y.set(body.position.y);
 
-            // Limit velocity
             const maxVel = 3;
             const speed = body.speed;
             if (speed > maxVel) {
@@ -361,7 +408,6 @@ export default function PartyLayout() {
         }
       });
 
-      // Random Forces (Wander)
       if (Math.random() < 0.05) {
          bodies.forEach(body => {
            if (!body.isStatic && Math.random() < 0.1) {
@@ -373,7 +419,7 @@ export default function PartyLayout() {
          });
       }
       
-      // Attraction Forces (Similar Unis)
+      // Attraction Forces
       bodies.forEach(b1 => {
         if (b1.isStatic) return;
         bodies.forEach(b2 => {
@@ -404,7 +450,6 @@ export default function PartyLayout() {
       animationFrameId = requestAnimationFrame(loop);
     };
 
-    // Start loop
     loop();
     Matter.Render.run(render);
 
@@ -418,108 +463,36 @@ export default function PartyLayout() {
     };
   }, []);
 
-  // Conversation Logic (Separate Interval, checks current positions via bodies)
+  // Update emotions based on conversations
   useEffect(() => {
-    const detectConversations = () => {
-      if (!engineRef.current) return;
-      
-      const bodies = Matter.Composite.allBodies(engineRef.current.world).filter(b => !b.isStatic && b.label !== 'Rectangle Body');
-      const newConvos: Conversation[] = [];
-      const now = Date.now();
-
-      bodies.forEach((b1, i) => {
-        bodies.slice(i + 1).forEach(b2 => {
-          const dx = b1.position.x - b2.position.x;
-          const dy = b1.position.y - b2.position.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < PROXIMITY_THRESHOLD) {
-            const id1 = bodiesMapRef.current.get(b1.id);
-            const id2 = bodiesMapRef.current.get(b2.id);
-            
-            if (id1 && id2) {
-              const convoId = [id1, id2].sort().join('-');
-              
-              // Preserve existing convo if still valid
-              const existing = conversations.find(c => c.id === convoId);
-              
-              if (existing) {
-                newConvos.push(existing);
-              } else {
-                // New conversation
-                const u1 = getAllUniversities().find(u => u.id === id1);
-                const u2 = getAllUniversities().find(u => u.id === id2);
-                if (u1 && u2) {
-                  newConvos.push({
-                    id: convoId,
-                    uni1Id: id1,
-                    uni2Id: id2,
-                    message: generateConversation(u1, u2),
-                    startTime: now
-                  });
-                }
-              }
-            }
-          }
-        });
+    setUniversities(prev => {
+      let changed = false;
+      const next = prev.map(u => {
+        const isChatting = conversations.some(c => c.participants.includes(u.id));
+        const currentEmotion = u.emotion;
+        const targetEmotion: UniversityState['emotion'] = isChatting ? '💬' : '😊';
+        
+        if (currentEmotion !== targetEmotion) {
+          changed = true;
+          return { ...u, emotion: targetEmotion };
+        }
+        return u;
       });
-
-      // Only update state if conversation IDs changed to avoid renders
-      setConversations(prev => {
-        const prevIds = prev.map(c => c.id).sort().join(',');
-        const newIds = newConvos.map(c => c.id).sort().join(',');
-        if (prevIds !== newIds) return newConvos;
-        return prev;
-      });
-      
-      // Update emotions based on active convos
-      setUniversities(prev => {
-        let changed = false;
-        const next = prev.map(u => {
-          const isChatting = newConvos.some(c => c.uni1Id === u.id || c.uni2Id === u.id);
-          const currentEmotion = u.emotion;
-          const targetEmotion = isChatting ? '💬' : '😊';
-          
-          if (currentEmotion !== targetEmotion) {
-            changed = true;
-            return { ...u, emotion: targetEmotion };
-          }
-          return u;
-        });
-        return changed ? next : prev;
-      });
-    };
-
-    const interval = setInterval(detectConversations, 500); 
-    return () => clearInterval(interval);
-  }, [conversations]); // Dependency on conversations to preserve existing messages
-
-  const generateConversation = (uni1: University, uni2: University): string => {
-    const messages = [];
-    if (Math.abs(uni1.rank - uni2.rank) <= 3) messages.push(`Top ${Math.max(uni1.rank, uni2.rank)} club!`);
-    else messages.push(`#${uni1.rank} meets #${uni2.rank}`);
-    
-    if (uni1.location.country === uni2.location.country) messages.push(`${uni1.location.country} squad!`);
-    
-    const commonMajor = uni1.majors.find(m => uni2.majors.includes(m));
-    if (commonMajor) messages.push(`${commonMajor} FTW!`);
-    
-    return messages[Math.floor(Math.random() * messages.length)] || "Hello!";
-  };
+      return changed ? next : prev;
+    });
+  }, [conversations]);
 
   return (
     <div
       ref={containerRef}
       className="relative w-screen h-screen bg-gradient-to-br from-amber-50 via-pink-50 to-purple-50 overflow-hidden"
     >
-      {/* Background pattern */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div className="absolute top-20 left-20 w-40 h-40 bg-yellow-300/20 rounded-full blur-3xl" />
         <div className="absolute bottom-40 right-40 w-60 h-60 bg-pink-300/20 rounded-full blur-3xl" />
         <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-purple-300/20 rounded-full blur-3xl" />
       </div>
 
-      {/* UI Header */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 text-center pointer-events-none">
         <h1 className="text-3xl font-bold text-gray-800">University Social Party 🎉</h1>
         <p className="text-sm text-gray-600 mt-1">
@@ -537,7 +510,6 @@ export default function PartyLayout() {
         <div className="mt-2 text-[10px] text-gray-500">Drag to move • Click to pin/unpin</div>
       </div>
 
-      {/* Render Avatars */}
       {universities.map((uni) => (
         <UniversityAvatar
           key={uni.id}
@@ -552,11 +524,10 @@ export default function PartyLayout() {
         />
       ))}
 
-      {/* Render Conversations */}
       <AnimatePresence>
         {conversations.map(convo => {
-          const mv1 = motionValuesRef.current.get(convo.uni1Id);
-          const mv2 = motionValuesRef.current.get(convo.uni2Id);
+          const mv1 = motionValuesRef.current.get(convo.participants[0]);
+          const mv2 = motionValuesRef.current.get(convo.participants[1]);
           
           if (!mv1 || !mv2) return null;
 
@@ -567,7 +538,7 @@ export default function PartyLayout() {
               uni1Y={mv1.y}
               uni2X={mv2.x}
               uni2Y={mv2.y}
-              message={convo.message}
+              messages={convo.messages}
             />
           );
         })}
